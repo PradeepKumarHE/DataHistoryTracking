@@ -14,7 +14,7 @@ import org.hibernate.envers.Audited;
 @Audited
 public class Book {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
     private int pages;
