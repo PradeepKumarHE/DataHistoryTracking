@@ -51,17 +51,12 @@ public class DataEnverseAduitApplication {
 		Revisions<Integer, Book> revisions=repository.findRevisions(id);
 		List<Revision<Integer, Book>> dataList=revisions.getContent().stream().collect(Collectors.toList());
 		List<CustomRevision> cList=new ArrayList<>();
-
-		for(Revision<Integer, Book> revision : dataList){
-			CustomRevision customRevision=new CustomRevision();
-			customRevision.setBook(revision.getEntity());
-			customRevision.setRevisionNumber(revision.getRequiredRevisionNumber());
-			RevisionMetadata<Integer> rm=revision.getMetadata();
-			customRevision.setRevisionType(rm.getRevisionType().toString());
-			customRevision.setRevisionTime(rm.getRequiredRevisionInstant().toString());
-			cList.add(customRevision);
-	}
-		return cList;
+		List<CustomRevision> cList1=dataList.stream().map(revision->new CustomRevision(revision.getEntity(),
+				revision.getRequiredRevisionNumber(),
+				revision.getMetadata().getRevisionType().toString(),
+				revision.getMetadata().getRequiredRevisionInstant().toString()
+				)).collect(Collectors.toList());
+		return cList1;
 	}
 	public static void main(String[] args) {
 		SpringApplication.run(DataEnverseAduitApplication.class, args);
