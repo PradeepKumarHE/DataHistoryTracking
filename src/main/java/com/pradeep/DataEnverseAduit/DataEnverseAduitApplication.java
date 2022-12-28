@@ -10,7 +10,9 @@ import org.springframework.data.history.Revisions;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 @SpringBootApplication
@@ -58,6 +60,24 @@ public class DataEnverseAduitApplication {
 				)).collect(Collectors.toList());
 		return cList1;
 	}
+    @GetMapping("/revisions/{id}/{startdate}/{enddate}")
+    public List<CustomRevision> getRevisionsByDate(@PathVariable  int id,@PathVariable  Date startdate, @PathVariable Date enddate){
+		Revisions<Integer, Book> revisions=repository.findRevisions(id);
+		Instant s=startdate.toInstant();
+		Instant e=enddate.toInstant();
+		List<Revision<Integer, Book>> dataList=revisions.getContent().stream().
+				filter(
+				revision -> revision.getMetadata().getRequiredRevisionInstant().isAfter(s) &&
+						revision.getMetadata().getRequiredRevisionInstant().isBefore(e)
+					).collect(Collectors.toList());
+		List<CustomRevision> cList=new ArrayList<>();
+		List<CustomRevision> cList1=dataList.stream().map(revision->new CustomRevision(revision.getEntity(),
+				revision.getRequiredRevisionNumber(),
+				revision.getMetadata().getRevisionType().toString(),
+				revision.getMetadata().getRequiredRevisionInstant().toString()
+		)).collect(Collectors.toList());
+		return cList1;
+    }
 	public static void main(String[] args) {
 		SpringApplication.run(DataEnverseAduitApplication.class, args);
 	}
