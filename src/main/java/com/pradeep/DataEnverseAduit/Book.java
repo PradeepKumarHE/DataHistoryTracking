@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.envers.Audited;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.util.Date;
 
 
 @Entity
@@ -18,4 +21,5 @@ public class Book {
     private int id;
     private String name;
     private int pages;
+    private Date createdDate=new Date();
 }

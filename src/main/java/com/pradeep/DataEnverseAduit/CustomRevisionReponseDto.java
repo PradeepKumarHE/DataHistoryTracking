@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomRevision {
+public class CustomRevisionReponseDto {
     private Book book;
     private Integer revisionNumber;
     private String revisionType;

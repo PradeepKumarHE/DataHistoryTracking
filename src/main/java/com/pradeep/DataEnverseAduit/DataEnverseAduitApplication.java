@@ -5,7 +5,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.history.Revision;
-import org.springframework.data.history.RevisionMetadata;
 import org.springframework.data.history.Revisions;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.bind.annotation.*;
@@ -49,29 +48,29 @@ public class DataEnverseAduitApplication {
 	}
 
 	@GetMapping("/revisions/{id}")
-	public List<CustomRevision> getRevisions(@PathVariable  int id){
+	public List<CustomRevisionReponseDto> getRevisions(@PathVariable  int id){
 		Revisions<Integer, Book> revisions=repository.findRevisions(id);
 		List<Revision<Integer, Book>> dataList=revisions.getContent().stream().collect(Collectors.toList());
-		List<CustomRevision> cList=new ArrayList<>();
-		List<CustomRevision> cList1=dataList.stream().map(revision->new CustomRevision(revision.getEntity(),
+		List<CustomRevisionReponseDto> cList=new ArrayList<>();
+		List<CustomRevisionReponseDto> cList1=dataList.stream().map(revision->new CustomRevisionReponseDto(revision.getEntity(),
 				revision.getRequiredRevisionNumber(),
 				revision.getMetadata().getRevisionType().toString(),
 				revision.getMetadata().getRequiredRevisionInstant().toString()
 				)).collect(Collectors.toList());
 		return cList1;
 	}
-    @GetMapping("/revisions/{id}/{startdate}/{enddate}")
-    public List<CustomRevision> getRevisionsByDate(@PathVariable  int id,@PathVariable  Date startdate, @PathVariable Date enddate){
-		Revisions<Integer, Book> revisions=repository.findRevisions(id);
-		Instant s=startdate.toInstant();
-		Instant e=enddate.toInstant();
+    @PostMapping("/revisions")
+    public List<CustomRevisionReponseDto> getRevisionsByDate(@RequestBody CustomRevisionsRequestDto customRevisionsRequestDto){
+		Revisions<Integer, Book> revisions=repository.findRevisions(customRevisionsRequestDto.getId());
+		Instant s=customRevisionsRequestDto.getStartDate().toInstant();
+		Instant e=customRevisionsRequestDto.getEndDate().toInstant();
 		List<Revision<Integer, Book>> dataList=revisions.getContent().stream().
 				filter(
-				revision -> revision.getMetadata().getRequiredRevisionInstant().isAfter(s) &&
-						revision.getMetadata().getRequiredRevisionInstant().isBefore(e)
-					).collect(Collectors.toList());
-		List<CustomRevision> cList=new ArrayList<>();
-		List<CustomRevision> cList1=dataList.stream().map(revision->new CustomRevision(revision.getEntity(),
+						revision -> revision.getMetadata().getRequiredRevisionInstant().isAfter(s) &&
+								revision.getMetadata().getRequiredRevisionInstant().isBefore(e)
+				).collect(Collectors.toList());
+		List<CustomRevisionReponseDto> cList=new ArrayList<>();
+		List<CustomRevisionReponseDto> cList1=dataList.stream().map(revision->new CustomRevisionReponseDto(revision.getEntity(),
 				revision.getRequiredRevisionNumber(),
 				revision.getMetadata().getRevisionType().toString(),
 				revision.getMetadata().getRequiredRevisionInstant().toString()
