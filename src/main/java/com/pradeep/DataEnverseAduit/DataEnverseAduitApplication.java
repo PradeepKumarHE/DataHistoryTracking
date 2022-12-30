@@ -62,12 +62,11 @@ public class DataEnverseAduitApplication {
     @PostMapping("/revisions")
     public List<CustomRevisionReponseDto> getRevisionsByDate(@RequestBody CustomRevisionsRequestDto customRevisionsRequestDto){
 		Revisions<Integer, Book> revisions=repository.findRevisions(customRevisionsRequestDto.getId());
-		Instant s=customRevisionsRequestDto.getStartDate().toInstant();
-		Instant e=customRevisionsRequestDto.getEndDate().toInstant();
+
 		List<Revision<Integer, Book>> dataList=revisions.getContent().stream().
 				filter(
-						revision -> revision.getMetadata().getRequiredRevisionInstant().isAfter(s) &&
-								revision.getMetadata().getRequiredRevisionInstant().isBefore(e)
+						revision -> revision.getEntity().getCreatedDate().isAfter(customRevisionsRequestDto.getStartDate()) &&
+								revision.getEntity().getCreatedDate().isBefore(customRevisionsRequestDto.getEndDate())
 				).collect(Collectors.toList());
 		List<CustomRevisionReponseDto> cList=new ArrayList<>();
 		List<CustomRevisionReponseDto> cList1=dataList.stream().map(revision->new CustomRevisionReponseDto(revision.getEntity(),

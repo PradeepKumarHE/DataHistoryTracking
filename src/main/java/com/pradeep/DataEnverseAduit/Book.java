@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.envers.Audited;
 import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -21,5 +23,5 @@ public class Book {
     private int id;
     private String name;
     private int pages;
-    private Date createdDate=new Date();
+    private LocalDate createdDate=LocalDate.now();
 }
